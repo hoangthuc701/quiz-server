@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+    volumes:
+      - quiz-mysql-data:/var/lib/mysql
+
+  app:
+    build: .
+    command: npm start
+    image: quiz
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=$NODE_ENV
+      - PORT=$PORT
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DBNAME=$MYSQL_DBNAME
+      - MYSQL_HOST=mysqldb
+    depends_on:
+      - mysqldb
+    stdin_open: true
+    tty: true
+volumes:
+  quiz-mysql-data:

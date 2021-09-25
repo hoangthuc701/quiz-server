@@ -1,0 +1,14 @@
+{
+  "env": "NODE_ENV",
+  "server": {
+    "port": "PORT"
+  },
+  "db": {
+    "user": "MYSQL_USER",
+    "password": "MYSQL_PASSWORD",
+    "db": "MYSQL_DBNAME",
+    "config": {
+      "host": "MYSQL_HOST"
+    }
+  }
+}
