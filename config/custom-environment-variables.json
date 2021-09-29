@@ -10,5 +10,6 @@
     "config": {
       "host": "MYSQL_HOST"
     }
-  }
+  },
+  "jwtSecret": "JWT_SECRET"
 }
