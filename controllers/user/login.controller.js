@@ -44,6 +44,7 @@ async function registerHandler(req, res) {
 
   const jwtPayload = {
     id: user.id,
+    email: user.email,
     role: user.role
   }
   const jwtSecret = config.get('jwtSecret')

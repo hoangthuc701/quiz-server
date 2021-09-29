@@ -7,7 +7,7 @@ services:
       - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE=$MYSQL_DATABASE
     volumes:
-      - quiz-mysql-data:/var/lib/mysql
+      - quiz-mysqldb-data:/var/lib/mysql
 
   app:
     build: .
@@ -27,4 +27,4 @@ services:
     stdin_open: true
     tty: true
 volumes:
-  quiz-mysql-data:
+  quiz-mysqldb-data:

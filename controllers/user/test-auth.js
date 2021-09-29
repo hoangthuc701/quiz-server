@@ -8,6 +8,7 @@ const USER_ROLE = require('../../constants/user.constants').USER_ROLE
 const { User: UserModel } = require('../../models')
 const genValidationHandler = require('../../middlewares/gen-request-validation')
 const authMiddleware = require('../../middlewares/auth')
+const requireRoleMiddleware = require('../../middlewares/require-role')
 
 
 async function testAuthHandler(req, res) {
@@ -22,5 +23,6 @@ async function testAuthHandler(req, res) {
 
 module.exports = [
   authMiddleware,
+  requireRoleMiddleware(USER_ROLE.ADMIN),
   testAuthHandler
 ]
