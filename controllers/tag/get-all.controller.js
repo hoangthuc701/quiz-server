@@ -3,7 +3,7 @@ const _ = require('lodash')
 const md5 = require('md5')
 const COMMON_RESPONSE_CODE = require('../../constants/response-code.constants').COMMON
 const USER_ROLE = require('../../constants/user.constants').USER_ROLE
-const { Category: CategoryModel } = require('../../models')
+const { Category: CategoryModel, Tag: TagModel } = require('../../models')
 const genValidationHandler = require('../../middlewares/gen-request-validation')
 
 const validationHandler = genValidationHandler({
@@ -16,7 +16,7 @@ async function getAllHandler(req, res) {
   const query = { active: true }
   if (req.query.getInactive === 'true') delete query.active
 
-  const categories = await CategoryModel.findAll({
+  const tags = await TagModel.findAll({
     where: query,
     attributes: ['id', 'title', 'description', 'active']
   })
@@ -24,7 +24,7 @@ async function getAllHandler(req, res) {
   return res.json({
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
-      categories: categories || []
+      categories: tags || []
     }
   })
 }

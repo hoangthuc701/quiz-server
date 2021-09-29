@@ -15,7 +15,7 @@ const validationHandler = genValidationHandler({
   }).unknown(false)
 })
 
-async function getAllHandler(req, res) {
+async function createHandler(req, res) {
   const data = _.cloneDeep(req.body)
   data.createdBy = req.user.id
 
@@ -44,5 +44,5 @@ module.exports = [
   authMiddleware,
   requireRoleMiddleware(USER_ROLE.ADMIN),
   validationHandler,
-  getAllHandler
+  createHandler
 ]

@@ -9,51 +9,33 @@ const authMiddleware = require('../../middlewares/auth')
 const requireRoleMiddleware = require('../../middlewares/require-role')
 
 const validationHandler = genValidationHandler({
-  params: joi.object({
-    categoryId: joi.number().required().integer().positive().invalid(null)
-  }).unknown(false),
   body: joi.object({
-    title: joi.string().trim().invalid('', null),
-    description: joi.string().trim().invalid('', null),
-    active: joi.boolean().invalid(null)
+    title: joi.string().trim().required().invalid('', null),
+    description: joi.string().trim().required().invalid('', null)
   }).unknown(false)
 })
 
-async function updateHandler(req, res) {
-  const { categoryId } = req.params
+async function createHandler(req, res) {
   const data = _.cloneDeep(req.body)
-  if (_.isEmpty(data)) return res.json({
-    code: COMMON_RESPONSE_CODE.SUCCEEDED,
-    data: {
-      message: 'Cập nhật danh mục thành công.',
-      category: {
-        id: categoryId,
-        ...data
-      }
-    }
-  })
+  data.createdBy = req.user.id
 
-  const where = { id: categoryId }
-  const category = await CategoryModel.findOne({ where })
-  if (!category) {
+  const createdTag = await TagModel.create(data)
+  if (!createdTag) {
     return res.json({
       code: COMMON_RESPONSE_CODE.FAILED,
       data: {
-        message: 'Danh mục không tồn tại.'
+        message: 'Tạo thẻ thất bại.'
       }
     })
   }
-  
-  await CategoryModel.update(data, { where })
+
+  createdTag.createdUser = req.user
 
   return res.json({
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
-      message: 'Cập nhật danh mục thành công.',
-      category: {
-        id: categoryId,
-        ...data
-      }
+      message: 'Tạo thẻ thành công.',
+      category: _.pick(createdTag, ['id', 'title', 'description', 'createdUser.id', 'createdUser.email'])
     }
   })
 }
@@ -62,5 +44,5 @@ module.exports = [
   authMiddleware,
   requireRoleMiddleware(USER_ROLE.ADMIN),
   validationHandler,
-  updateHandler
+  createHandler
 ]

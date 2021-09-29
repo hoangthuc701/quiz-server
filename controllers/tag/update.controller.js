@@ -10,7 +10,7 @@ const requireRoleMiddleware = require('../../middlewares/require-role')
 
 const validationHandler = genValidationHandler({
   params: joi.object({
-    categoryId: joi.number().required().integer().positive().invalid(null)
+    tagId: joi.number().required().integer().positive().invalid(null)
   }).unknown(false),
   body: joi.object({
     title: joi.string().trim().invalid('', null),
@@ -20,38 +20,38 @@ const validationHandler = genValidationHandler({
 })
 
 async function updateHandler(req, res) {
-  const { categoryId } = req.params
+  const { tagId } = req.params
   const data = _.cloneDeep(req.body)
   if (_.isEmpty(data)) return res.json({
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
-      message: 'Cập nhật danh mục thành công.',
+      message: 'Cập nhật thẻ thành công.',
       category: {
-        id: categoryId,
+        id: tagId,
         ...data
       }
     }
   })
 
-  const where = { id: categoryId }
-  const category = await CategoryModel.findOne({ where })
-  if (!category) {
+  const where = { id: tagId }
+  const tag = await TagModel.findOne({ where })
+  if (!tag) {
     return res.json({
       code: COMMON_RESPONSE_CODE.FAILED,
       data: {
-        message: 'Danh mục không tồn tại.'
+        message: 'Thẻ không tồn tại.'
       }
     })
   }
   
-  await CategoryModel.update(data, { where })
+  await TagModel.update(data, { where })
 
   return res.json({
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
-      message: 'Cập nhật danh mục thành công.',
+      message: 'Cập nhật thẻ thành công.',
       category: {
-        id: categoryId,
+        id: tagId,
         ...data
       }
     }
