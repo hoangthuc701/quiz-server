@@ -1,0 +1,5 @@
+
+exports.COMMON = {
+  SUCCEEDED: 1000,
+  FAILED: -1000
+}
