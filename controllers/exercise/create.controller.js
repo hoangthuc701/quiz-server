@@ -8,7 +8,8 @@ const {
   Category: CategoryModel, 
   Tag: TagModel, 
   Exercise: ExerciseModel,
-  Question: QuestionModel 
+  Question: QuestionModel,
+  ExerciseTag: ExerciseTagModel
 } = require('../../models')
 const genValidationHandler = require('../../middlewares/gen-request-validation')
 const authMiddleware = require('../../middlewares/auth')
@@ -62,6 +63,16 @@ async function createHandler(req, res) {
     code: COMMON_RESPONSE_CODE.FAILED,
     data: {
       message: 'Tạo đề thi thất bại.'
+    }
+  })
+
+  const createdExerciseTagList = await ExerciseTagModel.bulkCreate(
+    _.map(inputTagIdList, tagId => ({ exerciseId: createdExercise.id, tagId }))
+  )
+  if (_.get(createdExerciseTagList, 'length', 0) < 1) return res.json({
+    code: COMMON_RESPONSE_CODE.FAILED,
+    data: {
+      message: 'Tạo nhãn cho đề thi thất bại.'
     }
   })
 
