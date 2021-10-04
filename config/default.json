@@ -16,7 +16,7 @@
     }
   },
   "cors": {
-    "enable": false
+    "enable": true
   },
   "compression": {
     "enable": true
