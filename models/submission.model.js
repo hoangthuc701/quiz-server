@@ -30,13 +30,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
+      expiredAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
       nQuestion: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
       },
       nCorrectAnswer: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
       }
     },
     {
