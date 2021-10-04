@@ -5,6 +5,7 @@ const { Op } = require('sequelize')
 const COMMON_RESPONSE_CODE = require('../../constants/response-code.constants').COMMON
 const USER_ROLE = require('../../constants/user.constants').USER_ROLE
 const { 
+  User: UserModel,
   Category: CategoryModel, 
   Tag: TagModel, 
   Exercise: ExerciseModel,
@@ -62,18 +63,19 @@ async function updateHandler(req, res) {
     jobPromiseList.push(ExerciseTagModel.bulkCreate(exerciseTagList))
   }
 
-  if (_.isEmpty(deletedTagIdList)) {
+  if (!_.isEmpty(deletedTagIdList)) {
     jobPromiseList.push(ExerciseTagModel.destroy({ where: { exerciseId, tagId: { [Op.in]: deletedTagIdList } } }))
   }
 
   await Promise.all(jobPromiseList)
 
   const responseData = await transformResponse({
-
+    exercise,
+    category
   })
 
 
-  if (errMsg) return res.json({
+  return res.json({
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
       message: 'Cập nhật đề thi thành công.',
@@ -118,13 +120,16 @@ async function validate({ params: { exerciseId }, body }) {
 
   if (body.tagIdList) {
     const currTagList = await ExerciseTagModel.findAll({ where: { exerciseId, active: true } })
-    const currTagIdList = _.map(currTagList, 'id')
+    const currTagIdList = _.map(currTagList, 'tagId')
     const insertedTagIdList = _.filter(body.tagIdList, tagId => !_.includes(currTagIdList, tagId))
     const deletedTagIdList = _.filter(currTagIdList, tagId => !_.includes(body.tagIdList, tagId))
 
-    const nTag = await TagModel.count({ where: { active: true, id: { [Op.in]: insertedTagIdList } } }) 
-    if (nTag !== insertedTagIdList.length) return ['Thẻ không tồn tại.', data]
-
+    if (!_.isEmpty(insertedTagIdList)) {
+      const nTag = await TagModel.count({ where: { active: true, id: { [Op.in]: insertedTagIdList } } }) 
+      if (nTag !== insertedTagIdList.length) return ['Thẻ không tồn tại.', data]
+    }
+    console.log(insertedTagIdList)
+    console.log(deletedTagIdList)
     data.insertedTagIdList = insertedTagIdList
     data.deletedTagIdList = deletedTagIdList
     data.exerciseTagList = _.map(insertedTagIdList, tagId => ({ tagId, exerciseId }))
@@ -133,9 +138,18 @@ async function validate({ params: { exerciseId }, body }) {
   return [null, data]
 }
 
-async function transformResponse({}) {
-
-  return {
-    
-  }
+async function transformResponse({ exercise, category }) {
+  let data = null
+  const newestExercise = await ExerciseModel.findOne({ where: { id: exercise.id }, include: UserModel })
+  newestExercise.category = category
+  newestExercise.createdUser = newestExercise.user
+  const exerciseTagList = await ExerciseTagModel.findAll({ where: { exerciseId: exercise.id }, include: TagModel })
+  const tags = _.map(exerciseTagList, exerciseTag => ({ id: _.get(exerciseTag, 'tag.id'), title: _.get(exerciseTag, 'tag.title'), description: _.get(exerciseTag, 'tag.description') }))
+  newestExercise.tags = tags
+  return _.pick(newestExercise, [
+    'id', 'title', 'description', 'duration',
+    'category.id', 'category.title', 'category.description',
+    'createdUser.id', 'createdUser.email',
+    'tags'
+  ])
 }
