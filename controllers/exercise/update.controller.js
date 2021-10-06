@@ -113,7 +113,7 @@ async function validate({ params: { exerciseId }, body }) {
   data.exercise = exercise
 
   if (body.categoryId) {
-    const category = await ExerciseModel.findOne({ where: { id: body.categoryId, active: true }})
+    const category = await CategoryModel.findOne({ where: { id: body.categoryId, active: true }})
     if (!category) return ['Danh mục không tồn tại', data]
     data.category = category
   }
