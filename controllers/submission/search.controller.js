@@ -24,7 +24,6 @@ const validationHandler = genValidationHandler({
 })
 
 async function searchHandler(req, res) {
-  
   const submissionList = await SubmissionModel.findAll({
     where: {
       userId: req.user.id,
@@ -62,18 +61,23 @@ module.exports = [
 ]
 
 function transformResponse({ submissionList }) {
-  const responseData = _.map(submissionList, submission => _.pick(submission, [
-    'id',
-    'expiredAt',
-    'createdAt',
-    'nQuestion',
-    'nCorrectAnswer',
-    'exercise.id',
-    'exercise.title',
-    'exercise.description',
-    'exercise.duration',
-    'exercise.categoryId'
-  ]))
+  const responseData = _.map(submissionList, submission => {
+    const data = _.pick(submission, [
+      'id',
+      'expiredAt',
+      'createdAt',
+      'nQuestion',
+      'answerList',
+      'nCorrectAnswer',
+      'exercise.id',
+      'exercise.title',
+      'exercise.description',
+      'exercise.duration',
+      'exercise.categoryId'
+    ])
+    data.answerList = JSON.parse(data.answerList)
+    return data
+  })
 
   return responseData
 }

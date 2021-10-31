@@ -14,7 +14,7 @@ const {
   ExerciseTag: ExerciseTagModel
 } = require('../../models')
 const genValidationHandler = require('../../middlewares/gen-request-validation')
-const authMiddleware = require('../../middlewares/auth')
+const authOptionalMdw = require('../../middlewares/auth-optional')
 
 const validationHandler = genValidationHandler({
   params: joi.object({
@@ -42,6 +42,7 @@ async function getOneHandler(req, res) {
   ])
   
   const responseData = transformResponse({
+    reqUser: req.user || {},
     exercise,
     exerciseTagList,
     questionList
@@ -57,18 +58,22 @@ async function getOneHandler(req, res) {
 }
 
 module.exports = [
+  authOptionalMdw,
   validationHandler,
   getOneHandler
 ]
 
-function transformResponse({ exercise, exerciseTagList, questionList }) {
+function transformResponse({ exercise, exerciseTagList, questionList, reqUser = {} }) {
   exercise.questions = questionList
   exercise.createdUser = exercise.user
 
   const pickedQuestionAttrList = [
-    'id', 'no', 'content', 'correctAnswer', 
+    'id', 'no', 'content',
     'answer1', 'answer2', 'answer3', 'answer4'
   ]
+  if (reqUser.role === USER_ROLE.ADMIN) {
+    pickedQuestionAttrList.push('correctAnswer')
+  }
   const pickedExerciseList = [
     'id', 'title', 'description', 'duration',
     'category.id', 'category.title', 'category.description',

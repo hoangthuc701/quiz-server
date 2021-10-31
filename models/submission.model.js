@@ -34,6 +34,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      answerList: {
+        type: DataTypes.STRING,
+      },
       nQuestion: {
         type: DataTypes.INTEGER,
         allowNull: true

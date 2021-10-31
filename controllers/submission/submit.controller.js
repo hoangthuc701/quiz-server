@@ -49,14 +49,19 @@ async function submitHandler(req, res) {
   })
 
   let nCorrectAnswer = 0
+  const correctAnswerList = []
   _.forEach(questionList, question => {
     const inputAnswer = inputAnswerMapping[question.id]
     if (inputAnswer && inputAnswer === question.correctAnswer) nCorrectAnswer++
+    const correctAnswer = _.pick(question, ['content', 'answer1', 'answer2', 'answer3', 'answer4', 'correctAnswer'])
+    correctAnswer.userAnswer = inputAnswer || null
+    correctAnswerList.push(correctAnswer)
   })
 
   await SubmissionModel.update({
     nQuestion,
-    nCorrectAnswer
+    nCorrectAnswer,
+    answerList: JSON.stringify(correctAnswerList)
   }, { where: { id: submission.id } })
   
   return res.json({
@@ -64,7 +69,8 @@ async function submitHandler(req, res) {
     data: {
       message: 'Nộp bài làm thành công.',
       nQuestion,
-      nCorrectAnswer
+      nCorrectAnswer,
+      correctAnswerList
     }
   })
 }
