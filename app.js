@@ -6,11 +6,11 @@ const compression = require('compression')
 require('dotenv').config()
 const config = require('config')
 
-config.getSafe = function(key) {
+config.getSafe = function (key) {
   try {
     return config.get(key)
-  } catch (err){
-    
+  } catch (err) {
+
   }
 }
 
@@ -36,6 +36,7 @@ exports.start = async function () {
     })
   })
   app.use(function (err, req, res, next) {
+    console.log('asdasd', err)
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
       return res.status(400).json({
         message: 'Invalid input!',

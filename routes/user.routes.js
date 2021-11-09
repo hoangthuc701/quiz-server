@@ -6,6 +6,9 @@ const router = express.Router()
 const path = '/users'
 router.post('/register', userControllers.register)
 router.post('/login', userControllers.login)
+router.post('/forget-password', userControllers.forgetPwd)
+router.post('/reset-password', userControllers.resetPwd)
+router.post('/update-password', userControllers.updatePwd)
 router.post('/test-auth', userControllers.testAuth)
 
 
