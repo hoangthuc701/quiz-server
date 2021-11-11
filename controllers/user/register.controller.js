@@ -58,7 +58,7 @@ async function registerHandler(req, res) {
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
       message: 'Đăng kí thành công.',
-      user: _.pick(createdUser, ['id', 'email', 'fullname', 'fullname', 'phone'])
+      user: _.pick(createdUser, ['id', 'email', 'fullname', 'role', 'phone'])
     }
   })
 }
