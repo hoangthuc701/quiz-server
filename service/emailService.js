@@ -44,7 +44,7 @@ class EmailService {
     const template = `
     <p>Bạn vừa gửi yêu cầu Quên mật khẩu. </p>
     <p>Vui lòng click vào link bên dưới để đổi mật khẩu (link có hiệu lực trong vòng <strong>10 phút </strong>). Nếu không phải là bạn, xin vui lòng bỏ qua email này.</p>
-    <p><a href='${process.env.FE_HOST}/forget-password?token=${encodeURIComponent(verifyCode)}' target='_blank'> CLICK VÀO ĐÂY</a> để đổi mật khẩu.</p>
+    <p><a href='${process.env.FE_HOST}/user/reset-password?token=${encodeURIComponent(verifyCode)}' target='_blank'> CLICK VÀO ĐÂY</a> để đổi mật khẩu.</p>
     `
     await this.send(template, '[QUIZ] - Quên mật khẩu')
   }
