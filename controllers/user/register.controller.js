@@ -43,6 +43,8 @@ async function registerHandler(req, res) {
   const hashedPassword = md5(data.password)
   delete data.confirmPassword
   data.password = hashedPassword
+  data.avatarUrl = 'abc'
+  data.description = 'Hello. Nice to meet you'
 
   const createdUser = await UserModel.create(data)
   if (!createdUser) {
