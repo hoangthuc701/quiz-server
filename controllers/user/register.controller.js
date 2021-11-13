@@ -43,7 +43,6 @@ async function registerHandler(req, res) {
   const hashedPassword = md5(data.password)
   delete data.confirmPassword
   data.password = hashedPassword
-  data.role = USER_ROLE.NORMAL
 
   const createdUser = await UserModel.create(data)
   if (!createdUser) {

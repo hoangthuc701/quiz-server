@@ -11,7 +11,8 @@ const {
   Tag: TagModel, 
   Exercise: ExerciseModel,
   Question: QuestionModel,
-  ExerciseTag: ExerciseTagModel
+  ExerciseTag: ExerciseTagModel,
+  Feedback: FeedbackModel
 } = require('../../models')
 const genValidationHandler = require('../../middlewares/gen-request-validation')
 const authOptionalMdw = require('../../middlewares/auth-optional')
@@ -35,17 +36,20 @@ async function getOneHandler(req, res) {
 
   const [ 
     exerciseTagList,
-    questionList
+    questionList,
+    feedbackList,
   ] = await Promise.all([
     ExerciseTagModel.findAll({ where: { exerciseId, active: true }, include: TagModel }),
-    QuestionModel.findAll({ where: { exerciseId } })
+    QuestionModel.findAll({ where: { exerciseId } }),
+    FeedbackModel.findAll({ where: { exerciseId, active: true }, include: [UserModel] })
   ])
   
   const responseData = transformResponse({
     reqUser: req.user || {},
     exercise,
     exerciseTagList,
-    questionList
+    questionList,
+    feedbackList
   })
 
   return res.json({
@@ -63,7 +67,7 @@ module.exports = [
   getOneHandler
 ]
 
-function transformResponse({ exercise, exerciseTagList, questionList, reqUser = {} }) {
+function transformResponse({ exercise, exerciseTagList, questionList, feedbackList, reqUser = {} }) {
   exercise.questions = questionList
   exercise.createdUser = exercise.user
 
@@ -82,10 +86,11 @@ function transformResponse({ exercise, exerciseTagList, questionList, reqUser = 
     'questions'
   ]
 
+  const feedbacks = _.map(feedbackList, feedback => ({ id: feedback.id, content: feedback.content, createdUser: _.pick(feedback.user, ['id', 'email', 'fullname', 'role', 'phone', 'avatarUrl', 'description']) }))
   const tags = _.map(exerciseTagList, exerciseTag => ({ id: _.get(exerciseTag, 'tag.id'), title: _.get(exerciseTag, 'tag.title'), description: _.get(exerciseTag, 'tag.description') }))
   exercise = _.pick(exercise, pickedExerciseList)
   exercise.tags = tags
   exercise.questions = _.map(exercise.questions, (question) => _.pick(question, pickedQuestionAttrList))
-
+  if (reqUser.role === USER_ROLE.ADMIN || (reqUser.role === USER_ROLE.CREATOR && reqUser.id === _.get(exercise, 'createdUser.id', null))) exercise.feedbacks = feedbacks
   return exercise
 }
