@@ -32,6 +32,15 @@ async function registerHandler(req, res) {
     })
   }
 
+  if (!user.active) {
+    return res.json({
+      code: COMMON_RESPONSE_CODE.FAILED,
+      data: {
+        message: 'Tài khoản đã bị khóa.'
+      }
+    })
+  }
+
   const hashedPassword = md5(data.password)
   if (user.password !== hashedPassword) {
     return res.json({
