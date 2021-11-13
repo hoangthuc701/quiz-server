@@ -71,7 +71,7 @@ function transformResponse({ exercise, exerciseTagList, questionList, reqUser = 
     'id', 'no', 'content',
     'answer1', 'answer2', 'answer3', 'answer4'
   ]
-  if (reqUser.role === USER_ROLE.ADMIN) {
+  if (reqUser.role === USER_ROLE.ADMIN || (reqUser.role === USER_ROLE.CREATOR && reqUser.id === _.get(exercise, 'user.id', null))) {
     pickedQuestionAttrList.push('correctAnswer')
   }
   const pickedExerciseList = [

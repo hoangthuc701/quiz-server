@@ -12,7 +12,8 @@ const validationHandler = genValidationHandler({
     fullname: joi.string().trim().required().invalid('', null),
     phone: joi.string().trim().invalid(''),
     password: joi.string().trim().required().invalid('', null),
-    confirmPassword: joi.string().trim().required().invalid('', null)
+    confirmPassword: joi.string().trim().required().invalid('', null),
+    role: joi.number().optional().default(USER_ROLE.NORMAL).valid(USER_ROLE.NORMAL, USER_ROLE.CREATOR)
   }).unknown(false)
 })
 

@@ -86,7 +86,7 @@ async function updateHandler(req, res) {
 
 module.exports = [
   authMiddleware,
-  requireRoleMiddleware(USER_ROLE.ADMIN),
+  requireRoleMiddleware([USER_ROLE.ADMIN, USER_ROLE.CREATOR]),
   validationHandler,
   updateHandler
 ]
@@ -106,10 +106,11 @@ async function transformInput(req) {
   return [null, data]
 }
 
-async function validate({ params: { exerciseId }, body }) {
+async function validate({ params: { exerciseId }, body, user: reqUser }) {
   const data = {}
   const exercise = await ExerciseModel.findOne({ where: { id: exerciseId } })
   if (!exercise) return ['Đề thi không tồn tại.', data]
+  if (reqUser.role !== USER_ROLE.ADMIN && exercise.createdBy !== reqUser.id) return ['Bạn không được phép chỉnh sửa đề thi này.', data]
   data.exercise = exercise
 
   if (body.categoryId) {

@@ -23,6 +23,7 @@ const validationHandler = genValidationHandler({
     tagIdList: joi.array().min(1).items(joi.number().required().integer().positive().invalid(null)),
     offset: joi.number().min(0).invalid(null).default(0),
     limit: joi.number().min(1).invalid(null).default(20),
+    isGetOwned: joi.boolean().invalid(null).default(false),
     order: joi.array().min(1).invalid(null).default([['id', 'DESC']]).items(
       joi.array().required().length(2).invalid(null).items(
         joi.string().required().invalid('', null)
@@ -43,6 +44,7 @@ async function searchHandler(req, res) {
     exercise.tags = tags
   })
   const responseData = transformResponse({
+    reqUser: req.user || {},
     exerciseList
   })
 
@@ -56,13 +58,14 @@ async function searchHandler(req, res) {
 }
 
 module.exports = [
+  require('../../middlewares/auth-optional'),
   validationHandler,
   searchHandler
 ]
 
 function transformInput({ req }) {
   const data = _.cloneDeep(req.body)
-
+  const reqUser = _.get(req, 'user', {})
   const queryOpts = { 
     where: { active: true },
     include: [
@@ -74,6 +77,7 @@ function transformInput({ req }) {
     order: data.order
   }
   
+  if ([USER_ROLE.ADMIN, USER_ROLE.CREATOR].includes(reqUser.role) && data.isGetOwned) queryOpts.where.createdBy = reqUser.id
   if (data.categoryIdList) queryOpts.where.categoryId = { [Op.in]: data.categoryIdList }
   if (data.tagIdList) queryOpts.where[Op.and] = [ 
     sequelize.literal(
@@ -87,7 +91,7 @@ function transformInput({ req }) {
   return queryOpts
 }
 
-function transformResponse({ exerciseList }) {
+function transformResponse({ exerciseList, reqUser = {} }) {
   const pickedExerciseList = [
     'id', 'title', 'description', 'duration',
     'category.id', 'category.title', 'category.description',

@@ -33,7 +33,7 @@ async function handler(req, res) {
     code: COMMON_RESPONSE_CODE.SUCCEEDED,
     data: {
       message: 'Lấy thông tin người dùng thành công.',
-      user: _.pick(userInfo, ['id', 'email', 'fullname', 'role', 'phone'])
+      user: _.pick(userInfo, ['id', 'email', 'fullname', 'role', 'phone', 'avatarUrl', 'description'])
     }
   })
 }

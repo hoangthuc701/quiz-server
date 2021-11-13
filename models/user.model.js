@@ -34,6 +34,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      avatarUrl: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       role: {
         type: DataTypes.INTEGER,
         allowNull: false

@@ -107,7 +107,7 @@ async function createHandler(req, res) {
 
 module.exports = [
   authMiddleware,
-  requireRoleMiddleware(USER_ROLE.ADMIN),
+  requireRoleMiddleware([USER_ROLE.ADMIN, USER_ROLE.CREATOR]),
   validationHandler,
   createHandler
 ]

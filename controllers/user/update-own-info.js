@@ -15,6 +15,8 @@ const validationHandler = genValidationHandler({
     email: joi.string().trim().optional().email().invalid('', null),
     fullname: joi.string().trim().optional().invalid('', null),
     phone: joi.string().optional().trim().invalid(''),
+    avatarUrl: joi.string().optional().trim().invalid(''),
+    description: joi.string().optional().trim().invalid(''),
   }).unknown(false)
 })
 
